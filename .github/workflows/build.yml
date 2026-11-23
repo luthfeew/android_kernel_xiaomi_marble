@@ -3,6 +3,7 @@ name: Build Kernel
 on:
   push:
     branches: [bouquet_ci]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -87,7 +88,6 @@ jobs:
           ./build_bouquet.sh --noclean --ksu -- Image
           cp ~/Bouquet_marble_out/Image_ksu* ~/dist/
       - name: Build kernel Image with KernelSU & susfs
-        continue-on-error: true
         run: |
           cd ~
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android12-5.10 --depth=1
