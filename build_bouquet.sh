@@ -103,7 +103,7 @@ kernel_tree_cleanup() {
 	rm ${KDIR}/drivers/kernelsu/.git
 	rm -rf ${KDIR}/drivers/kernelsu
 	rm -f ${KDIR}/fs/susfs.c ${KDIR}/include/linux/susfs.h ${KDIR}/include/linux/susfs_def.h 2>/dev/null
-	git checkout -- fs/ drivers/ include/ kernel/ security/ mm/
+	git checkout -- block/ fs/ drivers/ include/ kernel/ security/ mm/
 }
 
 if ${with_ksu}; then
@@ -124,7 +124,8 @@ if ${with_ksu}; then
 		cp ${SUSFS_REPO}/kernel_patches/fs/*            ${KDIR}/fs/
 		cp ${SUSFS_REPO}/kernel_patches/include/linux/* ${KDIR}/include/linux/
 
-		git apply ${SUSFS_REPO}/kernel_patches/50_add_susfs_in_gki-android12-5.10.patch || exit 1
+		sed 's/MNT_WRITE_HOLD|MNT_MARKED|MNT_INTERNAL)/MNT_WRITE_HOLD|MNT_MARKED|MNT_INTERNAL|MNT_UMOUNT)/' \
+		    ${SUSFS_REPO}/kernel_patches/50_add_susfs_in_gki-android12-5.10.patch | git apply || exit 1
 		sed -e 's|a/kernel/|a/drivers/kernelsu/kernel/|g' \
 		    -e 's|b/kernel/|b/drivers/kernelsu/kernel/|g' \
 		    ${SUSFS_REPO}/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch | git apply || exit 1
